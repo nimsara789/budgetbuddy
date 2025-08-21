@@ -2,6 +2,7 @@ package com.example.budgetbuddy;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,11 +24,17 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class location extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -36,6 +43,7 @@ public class location extends AppCompatActivity implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
     private RecyclerView locationRecyclerView;
     private List<LocationItem> locationItems;
+    private Map<String, Marker> markersMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,10 @@ public class location extends AppCompatActivity implements OnMapReadyCallback {
         // Initialize UI components
         ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
+
+        // Update page title
+        TextView locationTitle = findViewById(R.id.location_title);
+        locationTitle.setText("Nearest Banks & Services");
 
         // Setup Google Maps
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -56,8 +68,8 @@ public class location extends AppCompatActivity implements OnMapReadyCallback {
         // Initialize location services
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Set up sample location data
-        setupSampleData();
+        // Set up location data
+        setupNearbyLocationData();
 
         // Setup RecyclerView
         locationRecyclerView = findViewById(R.id.location_list);
@@ -65,11 +77,29 @@ public class location extends AppCompatActivity implements OnMapReadyCallback {
         locationRecyclerView.setAdapter(new LocationAdapter(locationItems));
     }
 
-    private void setupSampleData() {
+    private void setupNearbyLocationData() {
         locationItems = new ArrayList<>();
-        locationItems.add(new LocationItem("Coffee Shop", "Rs 1,250.00", 3));
-        locationItems.add(new LocationItem("Supermarket", "Rs 7,540.00", 8));
-        locationItems.add(new LocationItem("Restaurant", "Rs 3,700.00", 5));
+
+        // Add banks
+        locationItems.add(new LocationItem("Bank of Ceylon - Main Branch", "Bank", 0.5));
+        locationItems.add(new LocationItem("People's Bank - City Branch", "Bank", 0.8));
+        locationItems.add(new LocationItem("Commercial Bank - Central", "Bank", 1.2));
+
+        // Add ATMs
+        locationItems.add(new LocationItem("BOC ATM - Shopping Mall", "ATM", 0.3));
+        locationItems.add(new LocationItem("People's Bank ATM", "ATM", 0.7));
+        locationItems.add(new LocationItem("Commercial Bank ATM", "ATM", 1.1));
+
+        // Add branches
+        locationItems.add(new LocationItem("Bank of Ceylon - North Branch", "Branch", 1.3));
+        locationItems.add(new LocationItem("People's Bank - East Branch", "Branch", 1.8));
+
+        // Add Food City locations
+        locationItems.add(new LocationItem("Cargills Food City - Main", "Food City", 0.6));
+        locationItems.add(new LocationItem("Cargills Food City - Express", "Food City", 1.5));
+
+        // Sort by distance - nearest first
+        Collections.sort(locationItems, Comparator.comparingDouble(item -> item.distance));
     }
 
     @Override
@@ -86,8 +116,8 @@ public class location extends AppCompatActivity implements OnMapReadyCallback {
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
 
-        // Add sample markers
-        addSampleMarkers();
+        // Add place markers
+        addLocationMarkers();
     }
 
     private void enableMyLocation() {
@@ -106,18 +136,75 @@ public class location extends AppCompatActivity implements OnMapReadyCallback {
         });
     }
 
-    private void addSampleMarkers() {
-        // Sample locations
-        LatLng location1 = new LatLng(6.9271, 79.8612); // Colombo
-        LatLng location2 = new LatLng(6.9157, 79.8636);
-        LatLng location3 = new LatLng(6.9337, 79.8508);
+    private void addLocationMarkers() {
+        // Sample locations for banks, ATMs, branches and Food City
+        // Banks
+        LatLng bocMainLocation = new LatLng(6.9271, 79.8612);
+        LatLng peoplesBankLocation = new LatLng(6.9157, 79.8636);
+        LatLng commercialBankLocation = new LatLng(6.9200, 79.8570);
 
-        mMap.addMarker(new MarkerOptions().position(location1).title("Coffee Shop"));
-        mMap.addMarker(new MarkerOptions().position(location2).title("Supermarket"));
-        mMap.addMarker(new MarkerOptions().position(location3).title("Restaurant"));
+        // ATMs
+        LatLng bocAtmLocation = new LatLng(6.9300, 79.8580);
+        LatLng pbAtmLocation = new LatLng(6.9220, 79.8590);
+        LatLng commAtmLocation = new LatLng(6.9180, 79.8560);
 
-        // Center map on first location
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location1, 14));
+        // Branches
+        LatLng bocBranchLocation = new LatLng(6.9350, 79.8650);
+        LatLng pbBranchLocation = new LatLng(6.9400, 79.8700);
+
+        // Food City
+        LatLng foodCityMainLocation = new LatLng(6.9210, 79.8550);
+        LatLng foodCityExpressLocation = new LatLng(6.9260, 79.8590);
+
+        // Highlight the nearest bank with a green marker
+        markersMap.put("Bank of Ceylon - Main Branch", mMap.addMarker(new MarkerOptions()
+                .position(bocMainLocation)
+                .title("Bank of Ceylon - Main Branch")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))));
+
+        markersMap.put("People's Bank - City Branch", mMap.addMarker(new MarkerOptions()
+                .position(peoplesBankLocation)
+                .title("People's Bank - City Branch")));
+
+        markersMap.put("Commercial Bank - Central", mMap.addMarker(new MarkerOptions()
+                .position(commercialBankLocation)
+                .title("Commercial Bank - Central")));
+
+        // Highlight the nearest ATM with a blue marker
+        markersMap.put("BOC ATM - Shopping Mall", mMap.addMarker(new MarkerOptions()
+                .position(bocAtmLocation)
+                .title("BOC ATM - Shopping Mall")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))));
+
+        markersMap.put("People's Bank ATM", mMap.addMarker(new MarkerOptions()
+                .position(pbAtmLocation)
+                .title("People's Bank ATM")));
+
+        markersMap.put("Commercial Bank ATM", mMap.addMarker(new MarkerOptions()
+                .position(commAtmLocation)
+                .title("Commercial Bank ATM")));
+
+        // Add branch markers
+        markersMap.put("Bank of Ceylon - North Branch", mMap.addMarker(new MarkerOptions()
+                .position(bocBranchLocation)
+                .title("Bank of Ceylon - North Branch")));
+
+        markersMap.put("People's Bank - East Branch", mMap.addMarker(new MarkerOptions()
+                .position(pbBranchLocation)
+                .title("People's Bank - East Branch")));
+
+        // Highlight the nearest Food City with an orange marker
+        markersMap.put("Cargills Food City - Main", mMap.addMarker(new MarkerOptions()
+                .position(foodCityMainLocation)
+                .title("Cargills Food City - Main")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))));
+
+        markersMap.put("Cargills Food City - Express", mMap.addMarker(new MarkerOptions()
+                .position(foodCityExpressLocation)
+                .title("Cargills Food City - Express")));
+
+        // Center map on nearest ATM
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bocAtmLocation, 14));
     }
 
     @Override
@@ -135,13 +222,13 @@ public class location extends AppCompatActivity implements OnMapReadyCallback {
     // Location item data class
     private static class LocationItem {
         String name;
-        String amount;
-        int transactions;
+        String category;
+        double distance; // distance in kilometers
 
-        LocationItem(String name, String amount, int transactions) {
+        LocationItem(String name, String category, double distance) {
             this.name = name;
-            this.amount = amount;
-            this.transactions = transactions;
+            this.category = category;
+            this.distance = distance;
         }
     }
 
@@ -165,10 +252,43 @@ public class location extends AppCompatActivity implements OnMapReadyCallback {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             LocationItem item = items.get(position);
-            holder.text1.setText(item.name + " - " + item.amount);
-            holder.text2.setText(item.transactions + " transactions");
+            holder.text1.setText(item.name);
+
+            // Format distance with one decimal place
+            String distanceText = String.format("%.1f km away", item.distance);
+
+            // Apply different styling based on category
+            if (item.distance < 0.7) {
+                // Highlight nearest locations of each type
+                switch (item.category) {
+                    case "Bank":
+                        holder.text2.setText(item.category + " • " + distanceText + " ⭐ NEAREST");
+                        holder.text2.setTextColor(Color.parseColor("#00D09E")); // Green
+                        break;
+                    case "ATM":
+                        holder.text2.setText(item.category + " • " + distanceText + " ⭐ NEAREST");
+                        holder.text2.setTextColor(Color.parseColor("#4285F4")); // Blue
+                        break;
+                    case "Food City":
+                        holder.text2.setText(item.category + " • " + distanceText + " ⭐ NEAREST");
+                        holder.text2.setTextColor(Color.parseColor("#FF8C00")); // Orange
+                        break;
+                    default:
+                        holder.text2.setText(item.category + " • " + distanceText);
+                        holder.text2.setTextColor(Color.GRAY);
+                }
+            } else {
+                holder.text2.setText(item.category + " • " + distanceText);
+                holder.text2.setTextColor(Color.GRAY);
+            }
 
             holder.itemView.setOnClickListener(v -> {
+                // Center map on this location when clicked
+                Marker marker = markersMap.get(item.name);
+                if (marker != null) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+                    marker.showInfoWindow();
+                }
                 Toast.makeText(location.this, "Selected: " + item.name, Toast.LENGTH_SHORT).show();
             });
         }

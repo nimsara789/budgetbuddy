@@ -115,11 +115,12 @@
                     android:id="@+id/expense_date_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
+                    android:background="@drawable/edit_text_background"
                     android:clickable="true"
+                    android:focusable="false"
                     android:hint="Select date"
                     android:padding="16dp"
-                    android:background="@drawable/edit_text_background"/>
+                    android:textColor="#070000" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

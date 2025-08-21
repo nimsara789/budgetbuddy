@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Add location permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Add accelerometer feature -->
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -17,8 +19,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Budgetbuddy"
         tools:targetApi="31">
+        <activity
+            android:name=".BudgetsetupActivity"
+            android:exported="true" />
+        <activity
+            android:name=".IncomedetailsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ExpenseDetails"
+            android:exported="true" />
+        <activity
+            android:name=".profile"
+            android:exported="true" />
 
-        <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBCeE81wOB-9Rj9pC8fyaD3KRNMuVxkqUY" />

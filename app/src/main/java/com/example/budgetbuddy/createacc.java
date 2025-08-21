@@ -8,12 +8,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
+import android.app.ProgressDialog;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class createacc extends AppCompatActivity {
 
@@ -24,12 +36,21 @@ public class createacc extends AppCompatActivity {
     private Button createAccountButton;
     private TextView alreadyHaveAccountTextView;
     private TextView loginLinkTextView;
+    private ProgressDialog progressDialog;
+
+    // Firebase
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_createacc);
+
+        // Initialize Firebase Auth and Database
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -41,6 +62,11 @@ public class createacc extends AppCompatActivity {
         initializeViews();
         setupHints();
         setupClickListeners();
+
+        // Initialize progress dialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Creating account...");
+        progressDialog.setCancelable(false);
     }
 
     private void initializeViews() {
@@ -82,8 +108,8 @@ public class createacc extends AppCompatActivity {
 
     private void createAccount() {
         // Get input values
-        String name = nameEditText.getText().toString().trim();
-        String email = emailEditText.getText().toString().trim();
+        final String name = nameEditText.getText().toString().trim();
+        final String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
         String confirmPassword = confirmPasswordEditText.getText().toString().trim();
 
@@ -130,15 +156,58 @@ public class createacc extends AppCompatActivity {
             return;
         }
 
-        // If all validations pass, create the account
-        // This is where you would typically register the user in your database or backend
-        // For now, just show a success message
-        Toast.makeText(this, "Account created successfully", Toast.LENGTH_SHORT).show();
+        // Show progress dialog
+        progressDialog.show();
 
-        // Navigate to login or main activity
-        Intent intent = new Intent(createacc.this, Login.class);
-        startActivity(intent);
-        finish();
+        // Create user with Firebase Auth
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, save user data to database
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                saveUserData(user.getUid(), name, email);
+                            }
+                        } else {
+                            // If sign in fails, display a message to the user
+                            progressDialog.dismiss();
+                            Toast.makeText(createacc.this, "Registration failed: " + task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void saveUserData(String userId, String name, String email) {
+        // Create user data map
+        HashMap<String, Object> user = new HashMap<>();
+        user.put("name", name);
+        user.put("email", email);
+        user.put("userId", userId);
+        user.put("createdAt", System.currentTimeMillis());
+
+        // Save to Firebase Database
+        mDatabase.child("users").child(userId).setValue(user)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        progressDialog.dismiss();
+
+                        if (task.isSuccessful()) {
+                            Toast.makeText(createacc.this, "Account created successfully", Toast.LENGTH_SHORT).show();
+
+                            // Navigate to login page
+                            Intent intent = new Intent(createacc.this, Login.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(createacc.this, "Failed to save user data: " + task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     private boolean isValidEmail(String email) {

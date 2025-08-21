@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical"
+    android:outlineAmbientShadowColor="#070000"
     android:padding="16dp"
     tools:context=".income">
 
@@ -22,6 +23,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Amount (Rs)"
+        android:textColor="#0B0000"
+        android:textColorLink="#090000"
         android:textSize="16sp" />
 
     <EditText
@@ -30,24 +33,28 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:hint="Enter amount"
-        android:inputType="numberDecimal" />
+        android:inputType="numberDecimal"
+        android:textColor="#000000" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Category"
+        android:textColor="#000000"
         android:textSize="16sp" />
 
     <Spinner
         android:id="@+id/income_category_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        tools:outlineSpotShadowColor="#050000" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Date"
+        android:textColor="#070000"
         android:textSize="16sp" />
 
     <EditText
@@ -57,12 +64,14 @@
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:focusable="false"
-        android:hint="Select date" />
+        android:hint="Select date"
+        android:textColor="#000000" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Notes"
+        android:textColor="#000000"
         android:textSize="16sp" />
 
     <EditText
@@ -73,7 +82,8 @@
         android:gravity="top|start"
         android:hint="Add notes (optional)"
         android:inputType="textMultiLine"
-        android:minLines="2" />
+        android:minLines="2"
+        android:textColor="#0B0000" />
 
     <Button
         android:id="@+id/save_income_button"

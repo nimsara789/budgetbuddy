@@ -3,6 +3,7 @@ package com.example.budgetbuddy;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.Calendar;
 
@@ -18,7 +19,8 @@ public class homepage extends AppCompatActivity {
     private TextView balanceTextView;
     private TextView nameTextView;
     private TextView greetingTextView;
-    private CardView expenseCard, incomeCard, budgetCard;
+    private CardView expenseCard, incomeCard, budgetCard, locationCard;
+    private ImageView profileIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +45,25 @@ public class homepage extends AppCompatActivity {
         balanceTextView = findViewById(R.id.balance_text);
         nameTextView = findViewById(R.id.name_text);
         greetingTextView = findViewById(R.id.greeting_text);
+        profileIcon = findViewById(R.id.profile_icon);
 
         // Initialize CardViews for main features
         expenseCard = findViewById(R.id.expense_card);
         incomeCard = findViewById(R.id.income_card);
         budgetCard = findViewById(R.id.budget_card);
+        locationCard = findViewById(R.id.location_card);
     }
 
     private void setupClickListeners() {
+        // Profile icon click listener
+        profileIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(homepage.this, profile.class);
+                startActivity(intent);
+            }
+        });
+
         expenseCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +87,15 @@ public class homepage extends AppCompatActivity {
             public void onClick(View v) {
                 // Navigate to budget management page
                 Intent intent = new Intent(homepage.this, budget.class);
+                startActivity(intent);
+            }
+        });
+
+        locationCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to location page
+                Intent intent = new Intent(homepage.this, location.class);
                 startActivity(intent);
             }
         });

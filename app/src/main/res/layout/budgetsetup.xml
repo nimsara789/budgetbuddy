@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Budget Details"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/total_budget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Monthly Budget: ₹0"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Food"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/food_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="₹0 (0%)"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Transportation"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/transport_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="₹0 (0%)"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Housing"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/housing_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="₹0 (0%)"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Entertainment"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/entertainment_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="₹0 (0%)"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Other"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/other_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="₹0 (0%)"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Budget"
+        android:backgroundTint="#F44336"/>
+</LinearLayout>
